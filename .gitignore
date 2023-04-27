@@ -1,0 +1,10 @@
+/target
+compile_commands.json
+/libSTARK/bin
+/libSTARK/stark-dpm
+/libSTARK/stark-tinyram
+/libSTARK/.cache
+.cache
+/bin
+.vscode
+.devcontainers

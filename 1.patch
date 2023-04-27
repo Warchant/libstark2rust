@@ -1,0 +1,83 @@
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..a3ae164
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,6 @@
++*.o
++.cache
++stark-dpm
++stark-tinyram
++*.a
++compile_commands.json
+diff --git a/libstark/src/protocols/common/CryptoCommitment/MerkleCommitment.hpp b/libstark/src/protocols/common/CryptoCommitment/MerkleCommitment.hpp
+index 52fa0a0..5822296 100644
+--- a/libstark/src/protocols/common/CryptoCommitment/MerkleCommitment.hpp
++++ b/libstark/src/protocols/common/CryptoCommitment/MerkleCommitment.hpp
+@@ -6,6 +6,7 @@
+ #include <cstring>
+ #include <map>
+ #include <set>
++#include <string>
+ 
+ namespace libstark{
+ namespace Protocols{
+@@ -13,7 +14,7 @@ namespace CryptoCommitment{
+ 
+ struct hashDigest_t{
+     char buffer[128/8];
+-    
++
+     std::string toString()const;
+ };
+ 
+@@ -24,8 +25,8 @@ bool operator<(const hashDigest_t& a, const hashDigest_t& b);
+ typedef std::vector<hashDigest_t> path_t;
+ 
+ //hashes 64 bytes from src into 32 bytes in dst
+-void hash(void const* const src, void * const dst); 
+-hashDigest_t hash(void const* const src); 
++void hash(void const* const src, void * const dst);
++hashDigest_t hash(void const* const src);
+ 
+ const short logBytesPerHash = 4;
+ 
+@@ -69,13 +70,13 @@ public:
+     void addEntry(const size_t idx, const hashDigest_t& data);
+     void deleteEntry(const size_t idx);
+     const hashDigest_t& readData(const size_t idx)const;
+-    
++
+     //idx is the index of a pair of hashes
+     hashDigest_t hashPair(const size_t idx)const;
+-    
++
+     //calculates the next layer, with merging received data, for verification
+     SparceMerkleLayer calculateNextLayer(const SparceMerkleLayer& recieved)const;
+-    
++
+     std::vector<hashDigest_t> toVector()const;
+     std::set<size_t> getIndices()const;
+ private:
+@@ -87,7 +88,7 @@ public:
+     //construct empty sparse tree
+     // It is expected src_logLen is in bytes.
+     SparceMerkleTree(const short src_logLen);
+-    
++
+     //De serialization
+     void DeSerialize(const std::set<size_t>& queriedIndices, const std::vector<hashDigest_t>& serializedSubtree);
+ 
+@@ -96,10 +97,10 @@ public:
+ 
+     bool hasData(const size_t idx)const;
+     const hashDigest_t& readData(const size_t idx)const;
+-    
++
+     //Serialization
+     std::vector<hashDigest_t> toVector()const;
+-    
++
+     //used to get expected results length
+     std::vector< std::pair<short,size_t> > getSerializationMapping(const std::set<size_t>& queriedIndices)const;
+ private:

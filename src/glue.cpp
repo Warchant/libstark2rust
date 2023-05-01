@@ -158,4 +158,9 @@ std::shared_ptr<SequenceUsize> bair_witness_get_permutation(const BairWitness& w
   return std::make_shared<SequenceUsize>(SequenceUsize{p});
 }
 
+std::shared_ptr<SequenceColor> bair_witness_get_assignment(const BairWitness& witness) {
+  const auto& p=  witness.assignment();
+  return std::make_shared<SequenceColor>(SequenceColor{p});
+}
+
 } // namespace libstark

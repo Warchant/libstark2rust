@@ -6,16 +6,16 @@ use cxx::{CxxVector, ExternType, SharedPtr, UniquePtr};
 use rand::{seq::SliceRandom, Rng};
 
 use self::{libstark::{
-    new_bair_witness, new_hardcoded_bair_instance, sequence_usize_get_index, sequence_usize_size,
-    BairInstance, BairWitness, SequenceUsize, SharedColor, bair_witness_get_permutation
+    new_bair_witness, new_hardcoded_bair_instance,
+    BairInstance, BairWitness, SequenceUsize, SharedColor, bair_witness_get_permutation, bair_witness_get_assignment, SequenceColor
 }};
 
-// #[cxx::bridge(namespace = "Algebra")]
-// pub mod Algebra {
-//     unsafe extern "C++" {
-//         type FieldElement;
-//     }
-// }
+#[cxx::bridge(namespace = "Algebra")]
+pub mod Algebra {
+    unsafe extern "C++" {
+        type FieldElement;
+    }
+}
 
 #[cxx::bridge(namespace = "libstark")]
 pub mod libstark {
@@ -36,14 +36,15 @@ pub mod libstark {
         fn sequence_usize_get_index(seq: &SequenceUsize, idx: usize) -> usize;
         fn sequence_usize_size(seq: &SequenceUsize) -> usize;
 
-        // type SequenceColor;
+        type SequenceColor;
         // fn sequence_color_get_index(
         //     seq: &SequenceColor,
         //     idx: usize,
         // ) -> SharedPtr<CxxVector<FieldElement>>;
-        // fn sequence_color_size(seq: &SequenceColor) -> usize;
+        fn sequence_color_size(seq: &SequenceColor) -> usize;
 
         fn bair_witness_get_permutation(witness: &BairWitness) -> SharedPtr<SequenceUsize>;
+        fn bair_witness_get_assignment(witness: &BairWitness) -> SharedPtr<SequenceColor>;
 
         ///////////////////////////////////////////////////////////////
         fn new_bair_witness(
@@ -96,5 +97,9 @@ pub fn generate_valid_constraints() -> (SharedPtr<BairInstance>, SharedPtr<BairW
 impl BairWitness {
     pub fn get_permutations(&self) -> SharedPtr<SequenceUsize> {
         bair_witness_get_permutation(&self)
+    }
+
+    pub fn get_assignment(&self) -> SharedPtr<SequenceColor> {
+        bair_witness_get_assignment(&self)
     }
 }

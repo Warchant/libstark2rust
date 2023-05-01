@@ -20,8 +20,8 @@ size_t sequence_usize_size(const SequenceUsize &self) {
 //   return std::make_shared<decltype(val)>(std::move(val));
 // }
 
-// size_t sequence_color_size(const SequenceColor &self) {
-//   return self.seq.size();
-// }
+size_t sequence_color_size(const SequenceColor &self) {
+  return self.seq.size();
+}
 
 } // namespace libstark

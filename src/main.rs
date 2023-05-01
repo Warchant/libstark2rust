@@ -28,4 +28,10 @@ fn main() {
         permutations.into_iter().collect::<Vec<_>>(),
         permutations.size()
     );
+
+    let assignment = witness.get_assignment();
+    println!(
+        "Assignment: TODO (size: {})",
+        permutations.size()
+    );
 }

@@ -12,6 +12,7 @@ fn main() {
         .flag_if_supported("-w")
         .flag_if_supported("-std=c++11")
         .file("src/glue.cpp")
+        .file("src/sequence.cpp")
         .compile("glue");
 
     let libdir = Path::new(&root).join("libSTARK/bin");
@@ -34,6 +35,8 @@ fn main() {
     println!("cargo:rustc-link-arg=-fopenmp");
 
     // rerun if changed
+    println!("cargo:rerun-if-changed={}/src/sequence.cpp", root);
+    println!("cargo:rerun-if-changed={}/src/sequence.hpp", root);
     println!("cargo:rerun-if-changed={}/src/glue.cpp", root);
     println!("cargo:rerun-if-changed={}/src/glue.hpp", root);
     println!("cargo:rerun-if-changed={}/build.rs", root);

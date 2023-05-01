@@ -12,6 +12,7 @@ std::unique_ptr<T> make_unique(Args &&...args) {
 }
 
 namespace libstark {
+
 template <typename T> class Vec2Sequence : public Sequence<T> {
 private:
   std::vector<T> _data;
@@ -22,6 +23,9 @@ public:
   Vec2Sequence(std::vector<T> data) : _data(std::move(data)) {}
   T getElementByIndex(typename base::index_t index) const override {
     return _data.at(index);
+  }
+  size_t size() const override {
+    return _data.size();
   }
 };
 
@@ -133,4 +137,25 @@ bool bair_witness_checker_verify_constraints_permutation(
     std::shared_ptr<BairWitness> witness) {
   return BairWitnessChecker::verify_constraintsPermutation(*instance, *witness);
 }
+
+// we return a copy of a vector, because `permutation` is a Sequence<size_t>.
+// we could've exposed it as a class, but imho Vec is
+std::vector<size_t> bair_witness_get_permutations(const BairWitness& witness) {
+  std::vector<size_t> ret;
+  const auto& p = witness.permutation();
+  ret.reserve(p.size());
+
+  for(size_t i=0, size = p.size();i<size; i++) {
+    ret.push_back(p.getElementByIndex(i));
+  }
+
+  return ret;
+}
+
+
+std::shared_ptr<SequenceUsize> bair_witness_get_permutation(const BairWitness& witness) {
+  const auto& p=  witness.permutation();
+  return std::make_shared<SequenceUsize>(SequenceUsize{p});
+}
+
 } // namespace libstark

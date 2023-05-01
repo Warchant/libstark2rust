@@ -1,11 +1,21 @@
+use std::ops::Deref;
+
 #[allow(unused_imports)]
 #[allow(dead_code)]
 use cxx::{CxxVector, ExternType, SharedPtr, UniquePtr};
 use rand::{seq::SliceRandom, Rng};
 
-use self::libstark::{
-    new_bair_witness, new_hardcoded_bair_instance, BairInstance, BairWitness, SharedColor,
-};
+use self::{libstark::{
+    new_bair_witness, new_hardcoded_bair_instance, sequence_usize_get_index, sequence_usize_size,
+    BairInstance, BairWitness, SequenceUsize, SharedColor, bair_witness_get_permutation
+}};
+
+// #[cxx::bridge(namespace = "Algebra")]
+// pub mod Algebra {
+//     unsafe extern "C++" {
+//         type FieldElement;
+//     }
+// }
 
 #[cxx::bridge(namespace = "libstark")]
 pub mod libstark {
@@ -14,6 +24,7 @@ pub mod libstark {
     }
 
     unsafe extern "C++" {
+        include!("sequence.hpp");
         include!("glue.hpp");
         include!("languages/Bair/BairWitness.hpp");
         include!("languages/Bair/BairInstance.hpp");
@@ -21,6 +32,20 @@ pub mod libstark {
         type BairInstance;
         type BairWitness;
 
+        type SequenceUsize;
+        fn sequence_usize_get_index(seq: &SequenceUsize, idx: usize) -> usize;
+        fn sequence_usize_size(seq: &SequenceUsize) -> usize;
+
+        // type SequenceColor;
+        // fn sequence_color_get_index(
+        //     seq: &SequenceColor,
+        //     idx: usize,
+        // ) -> SharedPtr<CxxVector<FieldElement>>;
+        // fn sequence_color_size(seq: &SequenceColor) -> usize;
+
+        fn bair_witness_get_permutation(witness: &BairWitness) -> SharedPtr<SequenceUsize>;
+
+        ///////////////////////////////////////////////////////////////
         fn new_bair_witness(
             assignment: &Vec<SharedColor>,
             permutation: &Vec<usize>,
@@ -29,7 +54,7 @@ pub mod libstark {
         fn new_hardcoded_bair_instance(
             vector_len: usize,
             // other fields can also be wrapped, it just takes more time
-            domain_size_indicator: i16
+            domain_size_indicator: i16,
         ) -> SharedPtr<BairInstance>;
 
         fn bair_witness_checker_verify_constraints_assignment(
@@ -65,4 +90,11 @@ pub fn generate_valid_constraints() -> (SharedPtr<BairInstance>, SharedPtr<BairW
     let witness = new_bair_witness(&a, &p);
     let instance = new_hardcoded_bair_instance(vector_len, domain_size_indicator);
     return (instance, witness);
+}
+
+
+impl BairWitness {
+    pub fn get_permutations(&self) -> SharedPtr<SequenceUsize> {
+        bair_witness_get_permutation(&self)
+    }
 }

@@ -16,7 +16,8 @@ size_t sequence_usize_size(const SequenceUsize &self);
 struct SequenceColor {
   const Sequence<BairWitness::color_t> &seq;
 };
-// std::shared_ptr<std::vector<Algebra::FieldElement>> sequence_color_get_index(const SequenceColor &self, size_t idx);
 size_t sequence_color_size(const SequenceColor &self);
+rust::Vec<size_t> sequence_color_get_index(const SequenceColor &self, size_t idx);
+
 
 } // namespace libstark

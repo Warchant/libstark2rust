@@ -1,26 +1,18 @@
-use std::ops::Deref;
-
-#[allow(unused_imports)]
-#[allow(dead_code)]
-use cxx::{CxxVector, ExternType, SharedPtr, UniquePtr};
+#![allow(dead_code)]
+use cxx::{SharedPtr};
 use rand::{seq::SliceRandom, Rng};
 
-use self::{libstark::{
-    new_bair_witness, new_hardcoded_bair_instance,
-    BairInstance, BairWitness, SequenceUsize, SharedColor, bair_witness_get_permutation, bair_witness_get_assignment, SequenceColor
-}};
-
-#[cxx::bridge(namespace = "Algebra")]
-pub mod Algebra {
-    unsafe extern "C++" {
-        type FieldElement;
-    }
-}
+use self::libstark::{
+    bair_witness_get_assignment, bair_witness_get_permutation, new_bair_witness,
+    new_hardcoded_bair_instance, BairInstance, BairWitness, SequenceColor, SequenceUsize,
+    SharedColor,
+};
 
 #[cxx::bridge(namespace = "libstark")]
 pub mod libstark {
+    #[derive(Debug)]
     struct SharedColor {
-        v: Vec<u64>,
+        v: Vec<usize>,
     }
 
     unsafe extern "C++" {
@@ -37,10 +29,7 @@ pub mod libstark {
         fn sequence_usize_size(seq: &SequenceUsize) -> usize;
 
         type SequenceColor;
-        // fn sequence_color_get_index(
-        //     seq: &SequenceColor,
-        //     idx: usize,
-        // ) -> SharedPtr<CxxVector<FieldElement>>;
+        fn sequence_color_get_index(seq: &SequenceColor, idx: usize) -> Vec<usize>;
         fn sequence_color_size(seq: &SequenceColor) -> usize;
 
         fn bair_witness_get_permutation(witness: &BairWitness) -> SharedPtr<SequenceUsize>;
@@ -80,7 +69,7 @@ pub fn generate_valid_constraints() -> (SharedPtr<BairInstance>, SharedPtr<BairW
     // generate random assignment
     let a = (0..domain_size)
         .map(|_| SharedColor {
-            v: (0..vector_len).map(|_| rng.gen::<u64>()).collect(),
+            v: (0..vector_len).map(|_| rng.gen::<usize>()).collect(),
         })
         .collect();
 
@@ -92,7 +81,6 @@ pub fn generate_valid_constraints() -> (SharedPtr<BairInstance>, SharedPtr<BairW
     let instance = new_hardcoded_bair_instance(vector_len, domain_size_indicator);
     return (instance, witness);
 }
-
 
 impl BairWitness {
     pub fn get_permutations(&self) -> SharedPtr<SequenceUsize> {

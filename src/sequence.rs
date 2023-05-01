@@ -1,8 +1,8 @@
-use crate::glue::{libstark::{
-    sequence_usize_get_index, sequence_usize_size, sequence_color_size, SequenceColor, SequenceUsize,
-}, Algebra::FieldElement};
+use crate::glue::libstark::{
+    sequence_usize_get_index, sequence_usize_size, sequence_color_size, SequenceColor, SequenceUsize, sequence_color_get_index,
+};
 
-pub trait Sequence<T> {
+pub trait Sequence<T>  {
     fn get_element_at_index(&self, idx: usize) -> T;
     fn size(&self) -> usize;
 }
@@ -18,26 +18,37 @@ impl Sequence<usize> for SequenceUsize {
     }
 }
 
-impl<'a> IntoIterator for &'a SequenceUsize {
-    type Item = usize;
-    type IntoIter = SequenceUsizeIterator<'a>;
+impl Sequence<Vec<usize>> for SequenceColor {
+    fn get_element_at_index(&self, idx: usize) -> Vec<usize> {
+        return sequence_color_get_index(&self, idx);
+    }
+
+    fn size(&self) -> usize {
+        return sequence_color_size(&self);
+    }
+}
+
+
+impl<'a, T> IntoIterator for &'a (dyn Sequence<T>) {
+    type Item = T;
+    type IntoIter = SequenceIter<'a, T>;
 
     fn into_iter(self) -> Self::IntoIter {
-        SequenceUsizeIterator {
-            seq: &self,
+        SequenceIter {
+            seq: self,
             index: 0,
         }
     }
 }
 
-pub struct SequenceUsizeIterator<'a> {
-    seq: &'a SequenceUsize,
+pub struct SequenceIter<'a, T> {
+    seq: &'a dyn Sequence<T>,
     index: usize,
 }
 
-impl Iterator for SequenceUsizeIterator<'_> {
-    type Item = usize;
-    fn next(&mut self) -> Option<usize> {
+impl<'a, T> Iterator for SequenceIter<'a, T> {
+    type Item = T;
+    fn next(&mut self) -> Option<T> {
         if self.index < self.seq.size() {
             let value = self.seq.get_element_at_index(self.index);
             self.index += 1;
@@ -45,16 +56,5 @@ impl Iterator for SequenceUsizeIterator<'_> {
         } else {
             None
         }
-    }
-}
-
-/////////////////////// SequenceColor
-impl Sequence<Vec<FieldElement>> for SequenceColor {
-    fn get_element_at_index(&self, idx: usize) -> Vec<FieldElement> {
-        todo!();
-    }
-
-    fn size(&self) -> usize {
-        return sequence_color_size(&self);
     }
 }

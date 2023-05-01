@@ -29,5 +29,4 @@ bool bair_witness_checker_verify_constraints_permutation(
 
 std::shared_ptr<SequenceUsize> bair_witness_get_permutation(const BairWitness& witness);
 std::shared_ptr<SequenceColor> bair_witness_get_assignment(const BairWitness& witness);
-
 } // namespace libstark

@@ -1,12 +1,23 @@
 # libstark2rust
 
-## Build
-
+## Deps
+Need to install cargo [make](https://github.com/sagiegurari/cargo-make#installation)
 ```bash
-# run this once:
-make init -j10
-# run the tool (test content)
-make run
+cargo install --force cargo-make
+```
+
+## Build
+First need to initialize libSTARK dependency
+```bash
+cargo make init
+```
+Build
+```bash
+cargo build
+```
+Run
+```
+cargo run
 ```
 
 Expected output:

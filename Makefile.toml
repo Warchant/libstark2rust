@@ -1,0 +1,14 @@
+# Build scripts for Catalyst-Core
+# This file is built with `cargo make` see:
+#  <https://github.com/sagiegurari/cargo-make>
+
+[tasks.init]
+script_runner = "@shell"
+script = '''
+	git submodule update --init
+	echo Patching libSTARK...
+	cd libSTARK
+	git clean -fdx .
+	git reset --hard
+	git apply ../1.patch
+'''
